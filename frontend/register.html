@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Sign Up - CarWash Connect</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">🚗 CarWash <span>Connect</span></a>
+      <ul class="nav-links" id="navbar-links"></ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="auth-box">
+      <h2>Create Customer Account</h2>
+      <p class="subtitle">Book car wash appointments near you with zero queue</p>
+
+      <div id="alert-box" class="alert"></div>
+
+      <form id="customer-register-form" onsubmit="handleCustomerRegister(event)">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="name@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Mobile Number</label>
+          <input type="tel" id="phone" class="form-control" placeholder="10-digit mobile number" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password (min 6 characters)</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" minlength="6" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••" minlength="6" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Create Customer Account</button>
+      </form>
+
+      <div style="margin-top:20px; text-align:center; font-size:0.9rem;">
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+        <p style="margin-top:6px;">Own a car wash business? <a href="register-provider.html">Register as Provider</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 CarWash Connect. College Project Presentation.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

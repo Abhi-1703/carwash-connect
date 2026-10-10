@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - CarWash Connect</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">🚗 CarWash <span>Connect</span></a>
+      <ul class="nav-links" id="navbar-links"></ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="auth-box">
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Log in to book services or manage your car wash center</p>
+
+      <div id="alert-box" class="alert"></div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="name@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Sign In</button>
+      </form>
+
+      <!-- College Presentation Demo Quick Credentials -->
+      <div style="margin-top:25px; padding:15px; background:#f1f5f9; border-radius:8px; font-size:0.85rem; border:1px dashed #cbd5e1;">
+        <strong style="color:#0f172a;">⚡ Demo Quick Fill (Seed Data):</strong><br>
+        <div style="margin-top:6px; display:flex; gap:8px;">
+          <button type="button" class="btn btn-sm btn-outline" style="font-size:11px;" onclick="document.getElementById('email').value='customer@gmail.com'; document.getElementById('password').value='password123';">Fill Customer</button>
+          <button type="button" class="btn btn-sm btn-secondary" style="font-size:11px;" onclick="document.getElementById('email').value='provider1@carwash.com'; document.getElementById('password').value='password123';">Fill Provider</button>
+        </div>
+      </div>
+
+      <div style="margin-top:20px; text-align:center; font-size:0.9rem;">
+        <p>Don't have an account? <a href="register.html">Sign up as Customer</a> or <a href="register-provider.html">Register as Provider</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 CarWash Connect. College Project Presentation.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

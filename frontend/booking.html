@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Booking - CarWash Connect</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">🚗 CarWash <span>Connect</span></a>
+      <ul class="nav-links" id="navbar-links"></ul>
+    </div>
+  </nav>
+
+  <main class="container" style="padding-top:30px; padding-bottom:60px;">
+    <!-- Confirmation Card (Hidden until booking success) -->
+    <div id="confirmation-card" style="display:none; max-width:600px; margin:40px auto; background:white; border-radius:10px; padding:35px; text-align:center; box-shadow:var(--shadow-lg); border-top:6px solid #10b981;">
+      <div style="font-size:3rem; margin-bottom:10px;">🎉</div>
+      <h2 style="color:#0f172a; margin-bottom:8px;">Booking Confirmed!</h2>
+      <p style="color:#64748b; margin-bottom:20px;">Your car wash slot has been locked successfully. No other customer can book this slot.</p>
+
+      <div style="background:#f8fafc; border-radius:8px; padding:20px; text-align:left; font-size:0.95rem; margin-bottom:25px; border:1px solid #e2e8f0;">
+        <p style="margin-bottom:8px;"><strong>Booking ID:</strong> <span id="conf-booking-id" style="color:#0284c7; font-family:monospace;"></span></p>
+        <p style="margin-bottom:8px;"><strong>Car Wash Center:</strong> <span id="conf-wash-name"></span></p>
+        <p style="margin-bottom:8px;"><strong>Service:</strong> <span id="conf-service"></span></p>
+        <p style="margin-bottom:8px;"><strong>Scheduled Time:</strong> <span id="conf-slot"></span></p>
+        <p style="margin-bottom:0;"><strong>Amount Payable:</strong> <span id="conf-price" style="font-weight:bold; color:#0f172a;"></span> (Pay at Center)</p>
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:12px;">
+        <a href="my-bookings.html" class="btn btn-primary">Go to My Bookings</a>
+        <a href="nearby.html" class="btn btn-outline">Find More Centers</a>
+      </div>
+    </div>
+
+    <!-- Booking Input Form Card -->
+    <div id="booking-form-card" style="max-width:800px; margin:0 auto; background:white; border-radius:10px; padding:35px; box-shadow:var(--shadow); border:1px solid #e2e8f0;">
+      <h1 style="font-size:1.8rem; color:var(--secondary); margin-bottom:6px;">Book Your Car Wash Slot</h1>
+      <p style="color:var(--text-muted); margin-bottom:25px;">Select your service, choose an available time slot, and arrive stress-free.</p>
+
+      <!-- Center Info Banner -->
+      <div style="background:#f0f9ff; border-left:4px solid var(--primary); padding:15px; border-radius:6px; margin-bottom:25px;">
+        <h3 id="wash-name" style="color:var(--secondary); margin-bottom:4px;">Car Wash Center</h3>
+        <p id="wash-address" style="color:#0369a1; font-size:0.9rem; margin-bottom:4px;">📍 Address</p>
+        <p id="wash-timing" style="color:#64748b; font-size:0.85rem;">🕒 Hours</p>
+      </div>
+
+      <form id="booking-form">
+        <!-- 1. Select Service -->
+        <div class="form-group">
+          <label for="service-select">1. Select Service Package *</label>
+          <select id="service-select" class="form-control" required>
+            <option value="">-- Loading Services... --</option>
+          </select>
+        </div>
+
+        <!-- 2. Select Date -->
+        <div class="form-group">
+          <label for="booking-date">2. Select Date *</label>
+          <input type="date" id="booking-date" class="form-control" required>
+        </div>
+
+        <!-- 3. Dynamic Time Slots Grid -->
+        <div class="form-group">
+          <label>3. Select Available Time Slot *</label>
+          <p id="slot-status-msg" style="font-size:0.85rem; color:#64748b; margin-bottom:10px;">Select a date above to display live slot availability.</p>
+          <div class="slots-container" id="slots-container">
+            <!-- Rendered by booking.js -->
+          </div>
+          <div style="display:flex; gap:15px; font-size:0.8rem; color:#64748b; margin-top:6px;">
+            <span><span style="display:inline-block; width:12px; height:12px; border:2px solid #e2e8f0; border-radius:3px; background:white; vertical-align:middle;"></span> Available Slot</span>
+            <span><span style="display:inline-block; width:12px; height:12px; border-radius:3px; background:#0284c7; vertical-align:middle;"></span> Selected</span>
+            <span><span style="display:inline-block; width:12px; height:12px; border-radius:3px; background:#f1f5f9; border:1px solid #cbd5e1; vertical-align:middle;"></span> Booked (Unavailable)</span>
+          </div>
+        </div>
+
+        <!-- 4. Vehicle Details -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:20px;">
+          <div class="form-group">
+            <label for="vehicle-type">Vehicle Type *</label>
+            <select id="vehicle-type" class="form-control" required>
+              <option value="Sedan">Sedan</option>
+              <option value="Hatchback">Hatchback</option>
+              <option value="SUV">SUV</option>
+              <option value="Bike">Bike</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="vehicle-number">Vehicle Number *</label>
+            <input type="text" id="vehicle-number" class="form-control" placeholder="e.g. MH12 AB 1234" required>
+          </div>
+        </div>
+
+        <!-- Order Summary Box -->
+        <div style="background:#f8fafc; border-radius:8px; padding:20px; margin:25px 0; border:1px solid #e2e8f0;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;">
+            <span>Selected Service:</span>
+            <strong id="summary-service">None selected</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;">
+            <span>Selected Time Slot:</span>
+            <strong id="summary-slot">None selected</strong>
+          </div>
+          <div style="border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; font-size:1.2rem; color:var(--secondary);">
+            <span>Total Payable:</span>
+            <span id="summary-total" style="font-weight:800; color:var(--primary);">₹0</span>
+          </div>
+          <p style="font-size:0.8rem; color:#94a3b8; margin-top:6px;">* Payment can be completed in-person via Cash / UPI upon service completion.</p>
+        </div>
+
+        <button type="submit" id="submit-booking-btn" class="btn btn-primary" style="width:100%; font-size:1.05rem; padding:14px;">Confirm Booking</button>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 CarWash Connect. College Project Presentation.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/booking.js"></script>
+</body>
+</html>

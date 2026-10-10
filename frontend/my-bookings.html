@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings - CarWash Connect</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">🚗 CarWash <span>Connect</span></a>
+      <ul class="nav-links" id="navbar-links"></ul>
+    </div>
+  </nav>
+
+  <main class="container" style="padding-top:30px; padding-bottom:60px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:25px;">
+      <div>
+        <h1 style="color:var(--secondary); font-size:1.8rem;">My Bookings History</h1>
+        <p style="color:var(--text-muted);">Track current and past car wash appointments</p>
+      </div>
+      <a href="nearby.html" class="btn btn-primary btn-sm">➕ Book New Wash</a>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Car Wash Center</th>
+            <th>Service Package</th>
+            <th>Date & Time</th>
+            <th>Vehicle</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="customer-bookings-tbody">
+          <tr>
+            <td colspan="8" style="text-align:center; padding:30px; color:#64748b;">Loading your bookings...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 CarWash Connect. College Project Presentation.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isLoggedIn()) {
+        alert('Please log in first.');
+        window.location.href = 'login.html';
+        return;
+      }
+      await loadCustomerBookings();
+    });
+
+    async function loadCustomerBookings() {
+      const tbody = document.getElementById('customer-bookings-tbody');
+      try {
+        const data = await apiFetch('/bookings/my');
+        const bookings = data.bookings || [];
+
+        if (bookings.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align:center; padding:40px; color:#64748b;">
+                <p style="font-size:1.1rem; margin-bottom:12px;">No bookings found yet.</p>
+                <a href="nearby.html" class="btn btn-primary btn-sm">Find Nearby Centers Now</a>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = bookings.map(b => {
+          const canCancel = b.status === 'Pending' || b.status === 'Confirmed';
+          const cancelBtn = canCancel 
+            ? `<button class="btn btn-sm btn-danger" onclick="cancelCustomerBooking('${b._id}')">Cancel</button>`
+            : `<span style="color:#94a3b8; font-size:12px;">N/A</span>`;
+
+          return `
+            <tr>
+              <td><strong>#${b._id.slice(-6)}</strong></td>
+              <td>
+                <strong>${b.washId ? b.washId.name : 'Unknown Center'}</strong><br>
+                <small style="color:#64748b;">📍 ${b.washId ? b.washId.address : 'N/A'}</small>
+              </td>
+              <td>
+                ${b.serviceId ? b.serviceId.serviceName : 'General Wash'}<br>
+                <small style="color:#0284c7;">⏱️ ${b.serviceId ? b.serviceId.estimatedDuration : '45 mins'}</small>
+              </td>
+              <td>
+                ${b.date}<br>
+                <strong>🕒 ${b.time}</strong>
+              </td>
+              <td>${b.vehicleType} (${b.vehicleNumber})</td>
+              <td><strong>₹${b.totalPrice}</strong></td>
+              <td><span class="badge badge-${b.status}">${b.status}</span></td>
+              <td>${cancelBtn}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">Failed to load bookings: ${error.message}</td></tr>`;
+      }
+    }
+
+    async function cancelCustomerBooking(bookingId) {
+      if (!confirm('Are you sure you want to cancel this booking?')) return;
+
+      try {
+        await apiFetch(`/bookings/${bookingId}`, {
+          method: 'DELETE',
+          body: JSON.stringify({ reason: 'Customer cancelled' })
+        });
+        alert('Booking cancelled successfully.');
+        await loadCustomerBookings();
+      } catch (error) {
+        alert('Cancellation error: ' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>

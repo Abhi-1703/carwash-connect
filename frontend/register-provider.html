@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Provider Sign Up - CarWash Connect</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">🚗 CarWash <span>Connect</span></a>
+      <ul class="nav-links" id="navbar-links"></ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="auth-box">
+      <h2>Join as Service Provider</h2>
+      <p class="subtitle">List your center, set prices, manage slots, and grow your customer base</p>
+
+      <div id="alert-box" class="alert"></div>
+
+      <form id="provider-register-form" onsubmit="handleProviderRegister(event)">
+        <div class="form-group">
+          <label for="name">Business / Owner Name</label>
+          <input type="text" id="name" class="form-control" placeholder="e.g. Amit Patel" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Business Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="owner@carspa.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Contact Mobile Number</label>
+          <input type="tel" id="phone" class="form-control" placeholder="10-digit mobile number" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password (min 6 characters)</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" minlength="6" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••" minlength="6" required>
+        </div>
+
+        <button type="submit" class="btn btn-secondary" style="width:100%; margin-top:10px;">Create Provider Account</button>
+      </form>
+
+      <div style="margin-top:20px; text-align:center; font-size:0.9rem;">
+        <p>Already registered? <a href="login.html">Login here</a></p>
+        <p style="margin-top:6px;">Looking for a car wash? <a href="register.html">Sign up as Customer</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 CarWash Connect. College Project Presentation.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

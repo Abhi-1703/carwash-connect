@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CarWash Connect - Location-Based Car Wash Booking</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">🚗 CarWash <span>Connect</span></a>
+      <ul class="nav-links" id="navbar-links">
+        <!-- Injected dynamically by api.js -->
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <h1>Find. Compare. Book.</h1>
+      <p>Locate the best car wash and detailing centers near you in real time. Choose your preferred time slot and eliminate waiting lines forever.</p>
+      <div class="hero-cta">
+        <a href="nearby.html" class="btn btn-primary" style="font-size:1.1rem; padding:12px 28px;">📍 Find Nearby Car Wash</a>
+        <a href="register-provider.html" class="btn btn-outline" style="color:white !important; border-color:white;">Join as Service Provider</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- How It Works -->
+  <main class="container">
+    <section class="section-title">
+      <h2>How It Works</h2>
+      <p>Booking your next automobile wash has never been simpler.</p>
+    </section>
+
+    <div class="grid-3">
+      <div class="step-card">
+        <div class="step-icon">📍</div>
+        <h3>1. Find Centers</h3>
+        <p>Allow location access or search your city to view verified car wash centers sorted by nearest distance.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">🔍</div>
+        <h3>2. Compare Services</h3>
+        <p>Review foam wash, interior vacuuming, ceramic coating, pricing, and estimated cleaning durations.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">📅</div>
+        <h3>3. Select Time Slot</h3>
+        <p>Pick a date and an available hourly time slot with real-time collision prevention.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">✨</div>
+        <h3>4. Hassle-Free Wash</h3>
+        <p>Arrive at your confirmed slot, skip the queue, and drive away in a sparkling clean vehicle.</p>
+      </div>
+    </div>
+
+    <!-- Features Banner -->
+    <section style="background:white; border-radius:10px; padding:40px; margin:40px 0; border:1px solid #e2e8f0; box-shadow:var(--shadow);">
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:30px;">
+        <div style="flex:1; min-width:280px;">
+          <h2 style="color:var(--secondary); margin-bottom:15px;">Smart Location & Capacity Engine</h2>
+          <p style="color:#64748b; margin-bottom:15px;">CarWash Connect computes exact straight-line distances using the spherical <strong>Haversine Formula</strong> and pinpoints centers on free interactive <strong>OpenStreetMap</strong> tiles.</p>
+          <ul style="list-style:none; line-height:2;">
+            <li>✅ Accurate distance calculation in kilometers</li>
+            <li>✅ Dynamic 60-minute time slot generation</li>
+            <li>✅ Backend conflict checks preventing double-booking</li>
+            <li>✅ Live provider dashboard for status updates</li>
+          </ul>
+        </div>
+        <div style="flex:1; min-width:280px; text-align:center;">
+          <img src="https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=600&q=80" alt="Car Spa" style="width:100%; max-width:450px; border-radius:10px; box-shadow:var(--shadow-lg);">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 CarWash Connect - A Location-Based Car Wash Booking Platform. Designed for College Project Demonstration.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+</body>
+</html>
