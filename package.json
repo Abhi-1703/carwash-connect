@@ -1,0 +1,21 @@
+{
+  "name": "carwash-connect",
+  "version": "1.0.0",
+  "description": "CarWash Connect: A Location-Based Car Wash Booking Platform",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "build": "npm install --prefix backend",
+    "install:backend": "npm install --prefix backend",
+    "seed": "node backend/utils/seedData.js"
+  },
+  "keywords": [
+    "carwash",
+    "location-based",
+    "booking",
+    "express",
+    "mongodb"
+  ],
+  "author": "Abhishek",
+  "license": "ISC"
+}
