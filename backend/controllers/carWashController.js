@@ -1,4 +1,4 @@
-﻿const CarWash = require('../models/CarWash');
+const CarWash = require('../models/CarWash');
 const Service = require('../models/Service');
 const { calculateDistance } = require('../utils/distance');
 
@@ -18,13 +18,23 @@ exports.getNearbyCarWashes = async (req, res) => {
 
     const userLat = parseFloat(lat);
     const userLng = parseFloat(lng);
-    const maxDist = maxDistance ? parseFloat(maxDistance) : 50; // default 50 km radius
+    const maxDist = maxDistance ? parseFloat(maxDistance) : 60; // default 60 km radius
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 50; // allow caller to limit, defaults to up to 50
 
     const allCarWashes = await CarWash.find().lean();
 
+    // Deduplicate by string ID just in case
+    const seenIds = new Set();
+    const uniqueWashes = allCarWashes.filter(w => {
+      const idStr = w._id.toString();
+      if (seenIds.has(idStr)) return false;
+      seenIds.add(idStr);
+      return true;
+    });
+
     // Attach distance and services to each car wash
     const carWashesWithDistance = await Promise.all(
-      allCarWashes.map(async (wash) => {
+      uniqueWashes.map(async (wash) => {
         const distance = calculateDistance(userLat, userLng, wash.latitude, wash.longitude);
         const services = await Service.find({ washId: wash._id }).lean();
         return {
@@ -40,11 +50,14 @@ exports.getNearbyCarWashes = async (req, res) => {
       .filter((wash) => wash.distance !== null && wash.distance <= maxDist)
       .sort((a, b) => a.distance - b.distance);
 
+    const limitedResults = nearby.slice(0, limit);
+
     res.status(200).json({
       success: true,
-      count: nearby.length,
+      totalCount: nearby.length,
+      count: limitedResults.length,
       userLocation: { latitude: userLat, longitude: userLng },
-      carWashes: nearby
+      carWashes: limitedResults
     });
   } catch (error) {
     console.error('Nearby error:', error);

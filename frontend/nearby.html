@@ -28,25 +28,32 @@
       </div>
     </div>
 
-    <!-- Shirdi Service Locations Section -->
-    <section class="location-section" id="shirdi-location-section">
+    <!-- Multi-Location Service Selection Section -->
+    <section class="location-section" id="location-selection-section">
       <div class="location-section-header">
-        <h2 class="location-section-title">📍 Choose Service Area (Shirdi & Vicinity)</h2>
-        <span class="area-badge">7 Service Zones Available</span>
+        <h2 class="location-section-title">📍 Select Service Town / Area (Maharashtra)</h2>
+        <span class="area-badge" id="total-locations-badge">15 Service Areas Available</span>
       </div>
 
       <div class="location-notice">
-        <strong>ℹ️ Service Area Notice:</strong> These 7 areas represent proposed service coverage zones in and around Shirdi, Maharashtra. Selecting an area updates your search point and shows available car wash centers or service status for that zone.
+        <strong>ℹ️ Multi-Location Notice:</strong> Choose your town below or select your current GPS position. You do not need GPS to search. Selecting any location immediately refreshes the map and shows up to 8 nearest car wash centers.
+      </div>
+
+      <!-- Region Filter Tabs -->
+      <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-sm btn-primary region-tab active" data-region="all">All Locations (15)</button>
+        <button type="button" class="btn btn-sm btn-outline region-tab" data-region="dhule-region">Dhule & Khandesh (8)</button>
+        <button type="button" class="btn btn-sm btn-outline region-tab" data-region="shirdi-region">Shirdi & Vicinity (7)</button>
       </div>
 
       <!-- Search & Dropdown Controls -->
       <div class="location-controls-bar">
         <div>
-          <input type="text" id="location-search-input" class="form-control" placeholder="🔍 Search service locations (e.g. Temple, Highway, Rahata)...">
+          <input type="text" id="location-search-input" class="form-control" placeholder="🔍 Search town (e.g. Dhule, Shirpur, Songir, Sakri, Sindkheda, Dondaicha, Shahada, Nardana)...">
         </div>
         <div>
           <select id="location-dropdown-select" class="form-control">
-            <option value="">-- Or Pick from Dropdown --</option>
+            <option value="">-- Choose Town / Area --</option>
           </select>
         </div>
       </div>
@@ -67,23 +74,46 @@
         </div>
       </div>
 
-      <!-- 7 Location Cards Grid -->
+      <!-- Location Cards Grid -->
       <div class="location-cards-grid" id="shirdi-locations-grid">
         <!-- Injected dynamically by nearby.js -->
       </div>
     </section>
 
-    <!-- Search Box for Centers -->
-    <div style="margin-bottom:25px;">
-      <input type="text" id="search-input" class="form-control" placeholder="🔍 Search car wash by center name, street, or area..." style="box-shadow:var(--shadow);">
+    <!-- Search & Search Radius Controls Bar for Centers -->
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:20px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:260px;">
+        <input type="text" id="search-input" class="form-control" placeholder="🔍 Filter centers by name, road, or service..." style="box-shadow:var(--shadow);">
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label for="radius-select" style="font-weight:600; font-size:0.9rem; color:var(--secondary); white-space:nowrap;">Search Radius:</label>
+        <select id="radius-select" class="form-control" style="width:auto; min-width:140px; box-shadow:var(--shadow);">
+          <option value="25">Within 25 km</option>
+          <option value="50">Within 50 km</option>
+          <option value="75" selected>Within 75 km</option>
+          <option value="120">Within 120 km</option>
+          <option value="250">Within 250 km (All)</option>
+        </select>
+      </div>
     </div>
 
     <!-- Interactive Leaflet Map Container -->
     <div id="map"></div>
 
+    <!-- Centers Results Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+      <h2 style="font-size:1.35rem; color:var(--secondary); margin:0;" id="results-count-title">Car Wash Centers Nearby</h2>
+      <span id="results-meta-badge" style="font-size:0.85rem; color:var(--text-muted);">Showing nearest centers</span>
+    </div>
+
     <!-- Distance-Sorted List of Car Wash Centers -->
     <div class="grid-3" id="carwash-list">
       <!-- Injected by nearby.js -->
+    </div>
+
+    <!-- Load More Button -->
+    <div id="load-more-container" style="text-align:center; margin:30px 0; display:none;">
+      <button id="load-more-btn" class="btn btn-outline" style="padding:10px 24px;">Load More Centers ⬇️</button>
     </div>
   </main>
 

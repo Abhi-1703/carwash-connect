@@ -64,19 +64,29 @@ function initBookingLocationDropdown() {
     locSelect.appendChild(centerOpt);
   }
 
-  // 2. Add Shirdi 7 Service Areas as optgroup
-  const shirdiLocations = typeof getShirdiLocations === 'function' ? getShirdiLocations() : [];
-  if (shirdiLocations.length > 0) {
-    const group = document.createElement('optgroup');
-    group.label = '📍 Shirdi, Maharashtra Service Coverage Areas';
+  // 2. Add Multi-Region Service Areas (Dhule / Khandesh + Shirdi)
+  const allLocations = typeof getAllLocations === 'function' ? getAllLocations() : (typeof getShirdiLocations === 'function' ? getShirdiLocations() : []);
+  if (allLocations.length > 0) {
+    const dhuleGroup = document.createElement('optgroup');
+    dhuleGroup.label = '📍 Dhule & Khandesh Service Areas (8 Towns)';
 
-    shirdiLocations.forEach(loc => {
+    const shirdiGroup = document.createElement('optgroup');
+    shirdiGroup.label = '📍 Shirdi & Vicinity Service Areas (7 Areas)';
+
+    allLocations.forEach(loc => {
       const opt = document.createElement('option');
       opt.value = `${loc.name}, ${loc.area}`;
       opt.textContent = `${loc.icon} ${loc.name} (${loc.pincode})`;
-      group.appendChild(opt);
+
+      if (loc.regionId === 'dhule-region') {
+        dhuleGroup.appendChild(opt);
+      } else {
+        shirdiGroup.appendChild(opt);
+      }
     });
-    locSelect.appendChild(group);
+
+    if (dhuleGroup.children.length > 0) locSelect.appendChild(dhuleGroup);
+    if (shirdiGroup.children.length > 0) locSelect.appendChild(shirdiGroup);
   }
 
   // Check if a location was previously selected on nearby.html

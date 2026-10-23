@@ -103,33 +103,56 @@ function addAreaMarker(lat, lng, areaObj) {
 /**
  * Renders multiple car wash markers on the map
  */
+const washMarkersMap = new Map();
+
 function renderCarWashMarkers(carWashes = []) {
   if (!globalLeafletMap || !markersGroup) return;
 
   markersGroup.clearLayers();
+  washMarkersMap.clear();
 
   const bounds = [];
 
   carWashes.forEach((wash) => {
-    if (wash.latitude && wash.longitude) {
+    if (typeof wash.latitude === 'number' && typeof wash.longitude === 'number' && !isNaN(wash.latitude) && !isNaN(wash.longitude)) {
       bounds.push([wash.latitude, wash.longitude]);
 
+      const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${wash.latitude},${wash.longitude}`;
+
       const popupContent = `
-        <div style="font-family:sans-serif; min-width:180px;">
+        <div style="font-family:sans-serif; min-width:190px;">
           <h4 style="margin:0 0 4px 0; color:#0f172a;">${wash.name}</h4>
           <p style="margin:0 0 4px 0; font-size:12px; color:#64748b;">${wash.address}</p>
           ${wash.distance !== undefined ? `<p style="margin:0 0 8px 0; font-size:12px; font-weight:bold; color:#0284c7;">📏 ${wash.distance} km away</p>` : ''}
-          <a href="carwash-details.html?id=${wash._id}" class="btn btn-sm btn-primary" style="display:inline-block; text-decoration:none; padding:4px 10px; font-size:12px;">View & Book</a>
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            <a href="carwash-details.html?id=${wash._id}" class="btn btn-sm btn-primary" style="flex:1; display:inline-block; text-decoration:none; padding:4px 8px; font-size:11px; text-align:center;">Book</a>
+            <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline" style="flex:1; display:inline-block; text-decoration:none; padding:4px 8px; font-size:11px; text-align:center;">Directions</a>
+          </div>
         </div>
       `;
 
-      L.marker([wash.latitude, wash.longitude])
+      const m = L.marker([wash.latitude, wash.longitude])
         .addTo(markersGroup)
         .bindPopup(popupContent);
+
+      washMarkersMap.set(wash._id.toString(), m);
     }
   });
 
   if (bounds.length > 0) {
-    globalLeafletMap.fitBounds(bounds, { padding: [40, 40] });
+    globalLeafletMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+  }
+}
+
+/**
+ * Highlights and opens the marker popup on map for a specific wash center
+ */
+function openWashMarker(washId) {
+  if (!globalLeafletMap || !washMarkersMap) return;
+  const m = washMarkersMap.get(washId.toString());
+  if (m) {
+    document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+    m.openPopup();
+    globalLeafletMap.setView(m.getLatLng(), 15);
   }
 }
