@@ -28,7 +28,52 @@
       </div>
     </div>
 
-    <!-- Search Box -->
+    <!-- Shirdi Service Locations Section -->
+    <section class="location-section" id="shirdi-location-section">
+      <div class="location-section-header">
+        <h2 class="location-section-title">📍 Choose Service Area (Shirdi & Vicinity)</h2>
+        <span class="area-badge">7 Service Zones Available</span>
+      </div>
+
+      <div class="location-notice">
+        <strong>ℹ️ Service Area Notice:</strong> These 7 areas represent proposed service coverage zones in and around Shirdi, Maharashtra. Selecting an area updates your search point and shows available car wash centers or service status for that zone.
+      </div>
+
+      <!-- Search & Dropdown Controls -->
+      <div class="location-controls-bar">
+        <div>
+          <input type="text" id="location-search-input" class="form-control" placeholder="🔍 Search service locations (e.g. Temple, Highway, Rahata)...">
+        </div>
+        <div>
+          <select id="location-dropdown-select" class="form-control">
+            <option value="">-- Or Pick from Dropdown --</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Selected Location Banner (Active State) -->
+      <div id="selected-location-banner" class="selected-location-banner" style="display:none;">
+        <div class="selected-location-info">
+          <div class="selected-location-icon" id="banner-loc-icon">📍</div>
+          <div class="selected-location-text">
+            <h4 id="banner-loc-name">Selected Location</h4>
+            <p id="banner-loc-desc">Coverage zone details</p>
+          </div>
+        </div>
+        <div class="selected-location-actions">
+          <button id="banner-view-map-btn" class="btn-banner-action" type="button">🗺️ View on Map</button>
+          <a id="banner-directions-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn-banner-action">🧭 Get Directions</a>
+          <button id="banner-clear-btn" class="btn-banner-action btn-banner-clear" type="button">✕ Reset to GPS</button>
+        </div>
+      </div>
+
+      <!-- 7 Location Cards Grid -->
+      <div class="location-cards-grid" id="shirdi-locations-grid">
+        <!-- Injected dynamically by nearby.js -->
+      </div>
+    </section>
+
+    <!-- Search Box for Centers -->
     <div style="margin-bottom:25px;">
       <input type="text" id="search-input" class="form-control" placeholder="🔍 Search car wash by center name, street, or area..." style="box-shadow:var(--shadow);">
     </div>
@@ -51,6 +96,7 @@
   <!-- Free Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="js/api.js"></script>
+  <script src="js/shirdi-locations.js"></script>
   <script src="js/map.js"></script>
   <script src="js/nearby.js"></script>
 </body>

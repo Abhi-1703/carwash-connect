@@ -94,6 +94,7 @@
               <td>
                 <strong>${b.washId ? b.washId.name : 'Unknown Center'}</strong><br>
                 <small style="color:#64748b;">📍 ${b.washId ? b.washId.address : 'N/A'}</small>
+                ${b.serviceLocation ? `<br><small style="color:#0369a1; font-weight:600;">📌 Service Area: ${b.serviceLocation}</small>` : ''}
               </td>
               <td>
                 ${b.serviceId ? b.serviceId.serviceName : 'General Wash'}<br>

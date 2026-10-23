@@ -1,4 +1,4 @@
-﻿const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema(
   {
@@ -46,6 +46,11 @@ const bookingSchema = new mongoose.Schema(
     },
     cancellationReason: {
       type: String,
+      default: ''
+    },
+    serviceLocation: {
+      type: String,
+      trim: true,
       default: ''
     }
   },

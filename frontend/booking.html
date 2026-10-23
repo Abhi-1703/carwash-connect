@@ -25,6 +25,7 @@
         <p style="margin-bottom:8px;"><strong>Booking ID:</strong> <span id="conf-booking-id" style="color:#0284c7; font-family:monospace;"></span></p>
         <p style="margin-bottom:8px;"><strong>Car Wash Center:</strong> <span id="conf-wash-name"></span></p>
         <p style="margin-bottom:8px;"><strong>Service:</strong> <span id="conf-service"></span></p>
+        <p style="margin-bottom:8px;"><strong>Service Location:</strong> <span id="conf-location" style="color:#0369a1; font-weight:600;"></span></p>
         <p style="margin-bottom:8px;"><strong>Scheduled Time:</strong> <span id="conf-slot"></span></p>
         <p style="margin-bottom:0;"><strong>Amount Payable:</strong> <span id="conf-price" style="font-weight:bold; color:#0f172a;"></span> (Pay at Center)</p>
       </div>
@@ -56,9 +57,20 @@
           </select>
         </div>
 
-        <!-- 2. Select Date -->
+        <!-- 2. Service Location / Area -->
         <div class="form-group">
-          <label for="booking-date">2. Select Date *</label>
+          <label for="booking-location-select">2. Service Area / Pick-up Location *</label>
+          <select id="booking-location-select" class="form-control" required>
+            <option value="">-- Choose Service Area --</option>
+          </select>
+          <small id="booking-loc-helper" style="display:block; margin-top:4px; color:#64748b; font-size:0.82rem;">
+            Select your preferred Shirdi service zone or center address.
+          </small>
+        </div>
+
+        <!-- 3. Select Date -->
+        <div class="form-group">
+          <label for="booking-date">3. Select Date *</label>
           <input type="date" id="booking-date" class="form-control" required>
         </div>
 
@@ -102,6 +114,10 @@
             <strong id="summary-service">None selected</strong>
           </div>
           <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;">
+            <span>Service Location:</span>
+            <strong id="summary-location" style="color:#0369a1;">None selected</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;">
             <span>Selected Time Slot:</span>
             <strong id="summary-slot">None selected</strong>
           </div>
@@ -124,6 +140,7 @@
   </footer>
 
   <script src="js/api.js"></script>
+  <script src="js/shirdi-locations.js"></script>
   <script src="js/booking.js"></script>
 </body>
 </html>

@@ -94,7 +94,7 @@ exports.getAvailableSlots = async (req, res) => {
 // @access  Private (Customer)
 exports.createBooking = async (req, res) => {
   try {
-    const { washId, serviceId, date, time, vehicleNumber, vehicleType } = req.body;
+    const { washId, serviceId, date, time, vehicleNumber, vehicleType, serviceLocation } = req.body;
 
     if (!washId || !serviceId || !date || !time) {
       return res.status(400).json({
@@ -147,6 +147,7 @@ exports.createBooking = async (req, res) => {
       time,
       vehicleNumber: vehicleNumber || 'Not Specified',
       vehicleType: vehicleType || 'Sedan',
+      serviceLocation: serviceLocation ? serviceLocation.trim() : '',
       totalPrice: service.price,
       status: 'Pending'
     });

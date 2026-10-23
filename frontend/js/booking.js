@@ -1,8 +1,9 @@
-// Booking Flow Engine
+// Booking Flow Engine with Integrated Location Support
 
 let currentWash = null;
 let selectedService = null;
 let selectedSlotTime = null;
+let selectedLocationName = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Check auth
@@ -34,6 +35,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load Car Wash & Services
   await loadWashDetails(washId, serviceId);
 
+  // Initialize Location Selection
+  initBookingLocationDropdown();
+
   // Load initial slots for today
   if (dateInput) {
     loadSlots(washId, dateInput.value);
@@ -45,6 +49,62 @@ document.addEventListener('DOMContentLoaded', async () => {
     bookingForm.addEventListener('submit', handleBookingSubmit);
   }
 });
+
+function initBookingLocationDropdown() {
+  const locSelect = document.getElementById('booking-location-select');
+  if (!locSelect) return;
+
+  locSelect.innerHTML = '<option value="">-- Choose Service Area / Pick-up Location * --</option>';
+
+  // 1. Center's own physical workshop address
+  if (currentWash) {
+    const centerOpt = document.createElement('option');
+    centerOpt.value = `${currentWash.name} (Workshop: ${currentWash.address})`;
+    centerOpt.textContent = `🏢 Center Workshop: ${currentWash.address}`;
+    locSelect.appendChild(centerOpt);
+  }
+
+  // 2. Add Shirdi 7 Service Areas as optgroup
+  const shirdiLocations = typeof getShirdiLocations === 'function' ? getShirdiLocations() : [];
+  if (shirdiLocations.length > 0) {
+    const group = document.createElement('optgroup');
+    group.label = '📍 Shirdi, Maharashtra Service Coverage Areas';
+
+    shirdiLocations.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = `${loc.name}, ${loc.area}`;
+      opt.textContent = `${loc.icon} ${loc.name} (${loc.pincode})`;
+      group.appendChild(opt);
+    });
+    locSelect.appendChild(group);
+  }
+
+  // Check if a location was previously selected on nearby.html
+  const savedLoc = typeof getSavedServiceLocation === 'function' ? getSavedServiceLocation() : null;
+  if (savedLoc) {
+    const matchingVal = `${savedLoc.name}, ${savedLoc.area}`;
+    for (let i = 0; i < locSelect.options.length; i++) {
+      if (locSelect.options[i].value === matchingVal) {
+        locSelect.selectedIndex = i;
+        selectedLocationName = matchingVal;
+        break;
+      }
+    }
+  }
+
+  if (!selectedLocationName && currentWash) {
+    // Default to workshop location if nothing pre-selected
+    selectedLocationName = `${currentWash.name} (Workshop: ${currentWash.address})`;
+    locSelect.selectedIndex = 1;
+  }
+
+  locSelect.addEventListener('change', (e) => {
+    selectedLocationName = e.target.value;
+    updateSummary();
+  });
+
+  updateSummary();
+}
 
 async function loadWashDetails(washId, preselectedServiceId) {
   try {
@@ -147,10 +207,12 @@ async function loadSlots(washId, date) {
 
 function updateSummary() {
   const summaryService = document.getElementById('summary-service');
+  const summaryLocation = document.getElementById('summary-location');
   const summarySlot = document.getElementById('summary-slot');
   const summaryTotal = document.getElementById('summary-total');
 
   if (summaryService) summaryService.textContent = selectedService ? selectedService.name : 'None selected';
+  if (summaryLocation) summaryLocation.textContent = selectedLocationName ? selectedLocationName : 'None selected';
   if (summarySlot) summarySlot.textContent = selectedSlotTime ? selectedSlotTime : 'None selected';
   if (summaryTotal) summaryTotal.textContent = selectedService ? `₹${selectedService.price}` : '₹0';
 }
@@ -160,6 +222,14 @@ async function handleBookingSubmit(e) {
 
   if (!selectedService) {
     alert('Please select a service package.');
+    return;
+  }
+
+  const locSelect = document.getElementById('booking-location-select');
+  const locationVal = locSelect ? locSelect.value.trim() : selectedLocationName;
+  if (!locationVal) {
+    alert('Please select a service area / pick-up location.');
+    if (locSelect) locSelect.focus();
     return;
   }
 
@@ -185,11 +255,12 @@ async function handleBookingSubmit(e) {
         date,
         time: selectedSlotTime,
         vehicleNumber,
-        vehicleType
+        vehicleType,
+        serviceLocation: locationVal
       })
     });
 
-    // Show Confirmation Dialog
+    // Show Confirmation Dialog with Location Details
     document.getElementById('booking-form-card').style.display = 'none';
     const confCard = document.getElementById('confirmation-card');
     confCard.style.display = 'block';
@@ -197,6 +268,12 @@ async function handleBookingSubmit(e) {
     document.getElementById('conf-booking-id').textContent = data.booking._id;
     document.getElementById('conf-wash-name').textContent = currentWash.name;
     document.getElementById('conf-service').textContent = selectedService.name;
+    
+    const confLocEl = document.getElementById('conf-location');
+    if (confLocEl) {
+      confLocEl.textContent = data.booking.serviceLocation || locationVal;
+    }
+
     document.getElementById('conf-slot').textContent = `${date} at ${selectedSlotTime}`;
     document.getElementById('conf-price').textContent = `₹${data.booking.totalPrice}`;
   } catch (error) {

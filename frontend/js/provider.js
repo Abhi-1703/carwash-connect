@@ -200,6 +200,7 @@ function renderBookingsTable(bookings) {
         <td>
           ${b.userId ? b.userId.name : 'Unknown'}<br>
           <small style="color:#64748b;">📞 ${b.userId ? b.userId.phone : 'N/A'}</small>
+          ${b.serviceLocation ? `<br><small style="color:#0369a1; font-weight:600;">📍 ${b.serviceLocation}</small>` : ''}
         </td>
         <td>
           ${b.vehicleType} (${b.vehicleNumber})<br>
