@@ -12,11 +12,11 @@ const Service = require('../models/Service');
 async function initDefaultCentre() {
   try {
     // 1. Ensure a designated default system provider account exists
-    let defaultOwner = await User.findOne({ email: 'default.centre@carwashconnect.demo' });
+    let defaultOwner = await User.findOne({ email: 'default.centre@carwash.com' });
     if (!defaultOwner) {
       defaultOwner = await User.create({
         name: 'CarWash Connect Demo Host',
-        email: 'default.centre@carwashconnect.demo',
+        email: 'default.centre@carwash.com',
         password: 'demo_secure_pass_' + Date.now(),
         phone: '1800-000-DEMO',
         role: 'provider'
