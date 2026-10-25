@@ -1,4 +1,4 @@
-﻿const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const serviceSchema = new mongoose.Schema(
   {
@@ -24,6 +24,14 @@ const serviceSchema = new mongoose.Schema(
     estimatedDuration: {
       type: String,
       default: '45 mins'
+    },
+    includedServices: {
+      type: [String],
+      default: []
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   {

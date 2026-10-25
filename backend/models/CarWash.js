@@ -1,4 +1,4 @@
-﻿const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const carWashSchema = new mongoose.Schema(
   {
@@ -57,6 +57,10 @@ const carWashSchema = new mongoose.Schema(
     imageUrl: {
       type: String,
       default: 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=600&q=80'
+    },
+    isDefault: {
+      type: Boolean,
+      default: false
     }
   },
   {

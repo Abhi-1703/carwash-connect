@@ -36,7 +36,7 @@ exports.getNearbyCarWashes = async (req, res) => {
     const carWashesWithDistance = await Promise.all(
       uniqueWashes.map(async (wash) => {
         const distance = calculateDistance(userLat, userLng, wash.latitude, wash.longitude);
-        const services = await Service.find({ washId: wash._id }).lean();
+        const services = await Service.find({ washId: wash._id, isActive: { $ne: false } }).lean();
         return {
           ...wash,
           distance, // distance in km
@@ -94,7 +94,11 @@ exports.getCarWashById = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Car wash center not found.' });
     }
 
-    const services = await Service.find({ washId: wash._id });
+    const serviceFilter = { washId: wash._id };
+    if (req.query.includeInactive !== 'true') {
+      serviceFilter.isActive = { $ne: false };
+    }
+    const services = await Service.find(serviceFilter);
 
     res.status(200).json({
       success: true,

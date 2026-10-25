@@ -71,9 +71,16 @@
         document.getElementById('detail-timing').textContent = `🕒 Operating Hours: ${wash.openingTime} - ${wash.closingTime}`;
         document.getElementById('detail-phone').textContent = `📞 ${wash.phone}`;
         document.getElementById('detail-desc').textContent = wash.description || 'Welcome to our professional automotive care center.';
-        // Update rating dynamically
+        
+        // Update rating dynamically & show Demo badge if applicable
         const ratingBadge = document.getElementById('detail-rating');
-        if (ratingBadge) ratingBadge.textContent = `⭐ ${wash.rating || '4.8'} Verified Partner`;
+        if (ratingBadge) {
+          if (wash.isDefault) {
+            ratingBadge.innerHTML = '⭐ 4.9 • <span style="background:#4338ca; color:#ffffff; padding:2px 8px; border-radius:10px; font-size:0.78rem;">Default Demo Centre</span>';
+          } else {
+            ratingBadge.textContent = `⭐ ${wash.rating || '4.8'} Verified Partner`;
+          }
+        }
 
         if (wash.imageUrl) {
           document.getElementById('detail-img').src = wash.imageUrl;
@@ -81,21 +88,47 @@
 
         const grid = document.getElementById('services-grid');
         if (services.length === 0) {
-          grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#64748b;">No service packages listed yet.</p>';
+          grid.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:40px 20px; background:#f8fafc; border-radius:10px; border:1px dashed #cbd5e1;">
+              <div style="font-size:2.5rem; margin-bottom:10px;">📋</div>
+              <h3 style="color:#0f172a; margin-bottom:8px;">No service packages listed yet for this centre.</h3>
+              <p style="color:#64748b; font-size:0.95rem; max-width:540px; margin:0 auto 16px auto; line-height:1.5;">
+                This partner centre is registered on CarWash Connect. If you manage <strong>${wash.name}</strong>, log in to your Provider Dashboard to configure wash packages and pricing.
+              </p>
+              <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+                <a href="login.html" class="btn btn-outline btn-sm">🔑 Provider Login</a>
+                <a href="nearby.html" class="btn btn-primary btn-sm">🔍 Explore Other Centres</a>
+              </div>
+            </div>
+          `;
           return;
         }
 
-        grid.innerHTML = services.map(s => `
-          <div style="background:white; border-radius:10px; padding:25px; border:1px solid #e2e8f0; box-shadow:var(--shadow); display:flex; flex-direction:column;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <h3 style="color:var(--secondary); font-size:1.2rem;">${s.serviceName}</h3>
-              <span style="font-size:1.3rem; font-weight:800; color:var(--primary);">₹${s.price}</span>
+        grid.innerHTML = services.map(s => {
+          const includedList = s.includedServices && s.includedServices.length > 0
+            ? `
+              <div style="margin:12px 0 16px 0; padding-top:10px; border-top:1px dashed #e2e8f0;">
+                <strong style="font-size:0.78rem; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">What's Included:</strong>
+                <ul style="padding-left:18px; margin:6px 0 0 0; font-size:0.85rem; color:#334155; line-height:1.5;">
+                  ${s.includedServices.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+              </div>
+            `
+            : '';
+
+          return `
+            <div style="background:white; border-radius:10px; padding:25px; border:1px solid #e2e8f0; box-shadow:var(--shadow); display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="color:var(--secondary); font-size:1.2rem; margin:0;">${s.serviceName}</h3>
+                <span style="font-size:1.3rem; font-weight:800; color:var(--primary);">₹${s.price}</span>
+              </div>
+              <p style="color:#64748b; font-size:0.9rem; margin-bottom:12px; flex:1;">${s.description}</p>
+              ${includedList}
+              <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:16px;">⏱️ Estimated Duration: <strong>${s.estimatedDuration || '45 mins'}</strong></p>
+              <a href="booking.html?washId=${wash._id}&serviceId=${s._id}" class="btn btn-primary" style="width:100%; text-align:center;">Book This Service</a>
             </div>
-            <p style="color:#64748b; font-size:0.9rem; margin-bottom:15px; flex:1;">${s.description}</p>
-            <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:18px;">⏱️ Duration: <strong>${s.estimatedDuration || '45 mins'}</strong></p>
-            <a href="booking.html?washId=${wash._id}&serviceId=${s._id}" class="btn btn-primary" style="width:100%;">Book This Service</a>
-          </div>
-        `).join('');
+          `;
+        }).join('');
 
       } catch (error) {
         alert('Failed to load center details: ' + error.message);

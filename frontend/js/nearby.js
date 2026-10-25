@@ -474,7 +474,7 @@ function renderCarWashes(washes, totalAvailableCount = 0) {
         <img src="${wash.imageUrl || 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=600&q=80'}" class="wash-img" alt="${wash.name}">
         <div class="wash-body">
           <div class="wash-header">
-            <h3 class="wash-title">${wash.name}</h3>
+            <h3 class="wash-title">${wash.name}${wash.isDefault ? ' <span style="background:#e0e7ff; color:#3730a3; font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:12px; vertical-align:middle;">Demo Centre</span>' : ''}</h3>
             <span class="distance-badge">📏 ${wash.distance !== undefined ? wash.distance + ' km' : 'Nearby'}</span>
           </div>
           <p class="wash-address">📍 ${wash.address}</p>

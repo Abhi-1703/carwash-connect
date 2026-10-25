@@ -115,6 +115,13 @@ exports.createBooking = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Selected service not found.' });
     }
 
+    if (service.isActive === false) {
+      return res.status(400).json({
+        success: false,
+        message: 'This service package is currently inactive and cannot be booked.'
+      });
+    }
+
     if (service.washId.toString() !== washId.toString()) {
       return res.status(400).json({
         success: false,

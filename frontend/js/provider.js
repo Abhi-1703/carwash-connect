@@ -31,7 +31,14 @@ async function loadProviderData() {
   try {
     const data = await apiFetch('/carwashes/provider/my');
     myWash = data.carWash;
-    myServices = data.services || [];
+
+    if (myWash) {
+      // Fetch all packages including inactive ones for provider dashboard
+      const srvRes = await apiFetch(`/services/wash/${myWash._id}?includeInactive=true`);
+      myServices = srvRes.services || [];
+    } else {
+      myServices = [];
+    }
 
     renderWashDetails();
     renderServicesTable();
@@ -89,22 +96,58 @@ function renderServicesTable() {
   if (!tbody) return;
 
   if (myServices.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748b;">No service packages added yet.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#64748b;">No service packages added yet.</td></tr>';
     return;
   }
 
-  tbody.innerHTML = myServices.map((s, idx) => `
-    <tr>
-      <td>${idx + 1}</td>
-      <td><strong>${s.serviceName}</strong></td>
-      <td>${s.description}</td>
-      <td><span style="font-weight:bold; color:#0284c7;">₹${s.price}</span></td>
-      <td>${s.estimatedDuration || '45 mins'}</td>
-      <td>
-        <button class="btn btn-sm btn-danger" onclick="deleteService('${s._id}')">Delete</button>
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = myServices.map((s, idx) => {
+    const isActive = s.isActive !== false;
+    const includedText = s.includedServices && s.includedServices.length > 0
+      ? s.includedServices.join(', ')
+      : '<span style="color:#94a3b8;">-</span>';
+
+    return `
+      <tr>
+        <td>${idx + 1}</td>
+        <td><strong>${s.serviceName}</strong></td>
+        <td>${s.description}</td>
+        <td style="font-size:0.85rem; color:#475569;">${includedText}</td>
+        <td><span style="font-weight:bold; color:#0284c7;">₹${s.price}</span></td>
+        <td>${s.estimatedDuration || '45 mins'}</td>
+        <td>
+          <span class="badge ${isActive ? 'badge-Confirmed' : 'badge-Rejected'}">
+            ${isActive ? 'Active' : 'Inactive'}
+          </span>
+        </td>
+        <td>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn btn-sm ${isActive ? 'btn-outline' : 'btn-success'}" onclick="toggleServiceStatus('${s._id}', ${!isActive})">
+              ${isActive ? 'Deactivate' : 'Activate'}
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="deleteService('${s._id}')">
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function toggleServiceStatus(serviceId, newActiveStatus) {
+  try {
+    const res = await apiFetch(`/services/${serviceId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ isActive: newActiveStatus })
+    });
+    const sIdx = myServices.findIndex(s => s._id === serviceId);
+    if (sIdx !== -1) {
+      myServices[sIdx] = res.service;
+      renderServicesTable();
+    }
+  } catch (error) {
+    alert('Status toggle error: ' + error.message);
+  }
 }
 
 async function handleAddService(e) {
@@ -114,12 +157,15 @@ async function handleAddService(e) {
     return;
   }
 
+  const includedVal = document.getElementById('srv-included') ? document.getElementById('srv-included').value.trim() : '';
+
   const payload = {
     washId: myWash._id,
     serviceName: document.getElementById('srv-name').value.trim(),
     price: parseFloat(document.getElementById('srv-price').value),
     estimatedDuration: document.getElementById('srv-duration').value.trim(),
-    description: document.getElementById('srv-desc').value.trim()
+    description: document.getElementById('srv-desc').value.trim(),
+    includedServices: includedVal ? includedVal.split(',').map(s => s.trim()).filter(Boolean) : []
   };
 
   try {
