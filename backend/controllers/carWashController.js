@@ -21,7 +21,7 @@ exports.getNearbyCarWashes = async (req, res) => {
     const maxDist = maxDistance ? parseFloat(maxDistance) : 60; // default 60 km radius
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 50; // allow caller to limit, defaults to up to 50
 
-    const allCarWashes = await CarWash.find().lean();
+    const allCarWashes = await CarWash.find({ isActive: { $ne: false } }).lean();
 
     // Deduplicate by string ID just in case
     const seenIds = new Set();
@@ -73,7 +73,11 @@ exports.getNearbyCarWashes = async (req, res) => {
 // @access  Public
 exports.getAllCarWashes = async (req, res) => {
   try {
-    const carWashes = await CarWash.find().populate('ownerId', 'name email phone');
+    const filter = {};
+    if (req.query.includeInactive !== 'true') {
+      filter.isActive = { $ne: false };
+    }
+    const carWashes = await CarWash.find(filter).populate('ownerId', 'name email phone');
     res.status(200).json({
       success: true,
       count: carWashes.length,
@@ -136,7 +140,29 @@ exports.getMyCarWash = async (req, res) => {
 // @access  Private (Provider only)
 exports.createCarWash = async (req, res) => {
   try {
-    const { name, address, latitude, longitude, phone, description, openingTime, closingTime, slotDurationMinutes, capacityPerSlot, imageUrl } = req.body;
+    const {
+      name,
+      address,
+      latitude,
+      longitude,
+      phone,
+      description,
+      openingTime,
+      closingTime,
+      slotDurationMinutes,
+      capacityPerSlot,
+      imageUrl,
+      city,
+      district,
+      state,
+      country,
+      email,
+      workingDays,
+      breakStartTime,
+      breakEndTime,
+      holidays,
+      isActive
+    } = req.body;
 
     if (!name || !address || latitude === undefined || longitude === undefined || !phone) {
       return res.status(400).json({
@@ -150,23 +176,32 @@ exports.createCarWash = async (req, res) => {
 
     if (wash) {
       // Update existing
-      wash = await CarWash.findByIdAndUpdate(
-        wash._id,
-        {
-          name,
-          address,
-          latitude: parseFloat(latitude),
-          longitude: parseFloat(longitude),
-          phone,
-          description: description || wash.description,
-          openingTime: openingTime || wash.openingTime,
-          closingTime: closingTime || wash.closingTime,
-          slotDurationMinutes: slotDurationMinutes ? parseInt(slotDurationMinutes) : wash.slotDurationMinutes,
-          capacityPerSlot: capacityPerSlot ? parseInt(capacityPerSlot) : wash.capacityPerSlot,
-          imageUrl: imageUrl || wash.imageUrl
-        },
-        { new: true }
-      );
+      const updateData = {
+        name,
+        address,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+        phone,
+        description: description !== undefined ? description : wash.description,
+        openingTime: openingTime || wash.openingTime,
+        closingTime: closingTime || wash.closingTime,
+        slotDurationMinutes: slotDurationMinutes ? parseInt(slotDurationMinutes, 10) : wash.slotDurationMinutes,
+        capacityPerSlot: capacityPerSlot ? parseInt(capacityPerSlot, 10) : wash.capacityPerSlot,
+        imageUrl: imageUrl || wash.imageUrl
+      };
+
+      if (city !== undefined) updateData.city = String(city).trim();
+      if (district !== undefined) updateData.district = String(district).trim();
+      if (state !== undefined) updateData.state = String(state).trim();
+      if (country !== undefined) updateData.country = String(country).trim();
+      if (email !== undefined) updateData.email = String(email).trim();
+      if (workingDays !== undefined && Array.isArray(workingDays)) updateData.workingDays = workingDays;
+      if (breakStartTime !== undefined) updateData.breakStartTime = breakStartTime;
+      if (breakEndTime !== undefined) updateData.breakEndTime = breakEndTime;
+      if (holidays !== undefined && Array.isArray(holidays)) updateData.holidays = holidays;
+      if (isActive !== undefined) updateData.isActive = Boolean(isActive);
+
+      wash = await CarWash.findByIdAndUpdate(wash._id, updateData, { new: true });
 
       return res.status(200).json({
         success: true,
@@ -186,9 +221,19 @@ exports.createCarWash = async (req, res) => {
       description,
       openingTime: openingTime || '09:00',
       closingTime: closingTime || '18:00',
-      slotDurationMinutes: slotDurationMinutes ? parseInt(slotDurationMinutes) : 60,
-      capacityPerSlot: capacityPerSlot ? parseInt(capacityPerSlot) : 1,
-      imageUrl: imageUrl || 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=600&q=80'
+      slotDurationMinutes: slotDurationMinutes ? parseInt(slotDurationMinutes, 10) : 60,
+      capacityPerSlot: capacityPerSlot ? parseInt(capacityPerSlot, 10) : 1,
+      imageUrl: imageUrl || 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=600&q=80',
+      city: city ? String(city).trim() : '',
+      district: district ? String(district).trim() : '',
+      state: state ? String(state).trim() : 'Maharashtra',
+      country: country ? String(country).trim() : 'India',
+      email: email ? String(email).trim() : '',
+      workingDays: Array.isArray(workingDays) && workingDays.length > 0 ? workingDays : ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      breakStartTime: breakStartTime || null,
+      breakEndTime: breakEndTime || null,
+      holidays: Array.isArray(holidays) ? holidays : [],
+      isActive: isActive !== undefined ? Boolean(isActive) : true
     });
 
     res.status(201).json({
@@ -203,7 +248,7 @@ exports.createCarWash = async (req, res) => {
 
 // @desc    Update specific car wash by ID
 // @route   PUT /api/carwashes/:id
-// @access  Private (Provider owner only)
+// @access  Private (Provider owner or Admin)
 exports.updateCarWash = async (req, res) => {
   try {
     let wash = await CarWash.findById(req.params.id);
@@ -212,8 +257,8 @@ exports.updateCarWash = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Car wash not found' });
     }
 
-    // Ensure only the center owner can update
-    if (wash.ownerId.toString() !== req.user._id.toString()) {
+    // Ensure only the center owner or admin can update
+    if (wash.ownerId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Unauthorized: You can only edit your own car wash center.'
@@ -237,7 +282,7 @@ exports.updateCarWash = async (req, res) => {
 
 // @desc    Delete car wash by ID
 // @route   DELETE /api/carwashes/:id
-// @access  Private (Provider owner only)
+// @access  Private (Provider owner or Admin)
 exports.deleteCarWash = async (req, res) => {
   try {
     const wash = await CarWash.findById(req.params.id);
@@ -246,7 +291,7 @@ exports.deleteCarWash = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Car wash not found' });
     }
 
-    if (wash.ownerId.toString() !== req.user._id.toString()) {
+    if (wash.ownerId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Unauthorized: You can only delete your own car wash center.'

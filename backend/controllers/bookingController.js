@@ -40,14 +40,63 @@ exports.getAvailableSlots = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Car wash center not found.' });
     }
 
+    if (wash.isActive === false) {
+      return res.status(200).json({
+        success: true,
+        washId,
+        washName: wash.name,
+        date,
+        isClosed: true,
+        message: 'This car wash center is temporarily inactive and not accepting appointments.',
+        slots: []
+      });
+    }
+
+    // Check holiday closure
+    if (wash.holidays && Array.isArray(wash.holidays) && wash.holidays.includes(date)) {
+      return res.status(200).json({
+        success: true,
+        washId,
+        washName: wash.name,
+        date,
+        isClosed: true,
+        message: 'The car wash center is closed for a holiday on this date.',
+        slots: []
+      });
+    }
+
+    // Check weekly working days
+    if (wash.workingDays && Array.isArray(wash.workingDays) && wash.workingDays.length > 0) {
+      const dayName = new Date(date + 'T00:00:00Z').toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+      if (!wash.workingDays.includes(dayName)) {
+        return res.status(200).json({
+          success: true,
+          washId,
+          washName: wash.name,
+          date,
+          isClosed: true,
+          message: `The car wash center is closed on ${dayName}s.`,
+          slots: []
+        });
+      }
+    }
+
     const openMin = parseTimeToMinutes(wash.openingTime || '09:00');
     const closeMin = parseTimeToMinutes(wash.closingTime || '18:00');
     const duration = wash.slotDurationMinutes || 60;
     const capacity = wash.capacityPerSlot || 1;
+    const breakStartMin = wash.breakStartTime ? parseTimeToMinutes(wash.breakStartTime) : null;
+    const breakEndMin = wash.breakEndTime ? parseTimeToMinutes(wash.breakEndTime) : null;
 
     // Generate standard time slots between opening and closing time
     const slotTimes = [];
     for (let current = openMin; current + duration <= closeMin; current += duration) {
+      // Exclude slots that fall inside designated break interval
+      if (breakStartMin !== null && breakEndMin !== null) {
+        if (current >= breakStartMin && current < breakEndMin) {
+          continue;
+        }
+      }
       slotTimes.push(formatTime12Hr(current));
     }
 
@@ -103,10 +152,34 @@ exports.createBooking = async (req, res) => {
       });
     }
 
-    // 1. Verify Car Wash exists
+    // 1. Verify Car Wash exists and is active
     const wash = await CarWash.findById(washId);
     if (!wash) {
       return res.status(404).json({ success: false, message: 'Car wash center not found.' });
+    }
+
+    if (wash.isActive === false) {
+      return res.status(400).json({
+        success: false,
+        message: 'This car wash center is currently inactive and not accepting bookings.'
+      });
+    }
+
+    if (wash.holidays && Array.isArray(wash.holidays) && wash.holidays.includes(date)) {
+      return res.status(400).json({
+        success: false,
+        message: 'The car wash center is closed for a holiday on the selected date.'
+      });
+    }
+
+    if (wash.workingDays && Array.isArray(wash.workingDays) && wash.workingDays.length > 0) {
+      const dayName = new Date(date + 'T00:00:00Z').toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+      if (!wash.workingDays.includes(dayName)) {
+        return res.status(400).json({
+          success: false,
+          message: `The car wash center is closed on ${dayName}s.`
+        });
+      }
     }
 
     // 2. Verify Service exists and belongs to this car wash

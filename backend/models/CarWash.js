@@ -58,6 +58,51 @@ const carWashSchema = new mongoose.Schema(
       type: String,
       default: 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=600&q=80'
     },
+    city: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    district: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    state: {
+      type: String,
+      trim: true,
+      default: 'Maharashtra'
+    },
+    country: {
+      type: String,
+      trim: true,
+      default: 'India'
+    },
+    email: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    workingDays: {
+      type: [String],
+      default: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    },
+    breakStartTime: {
+      type: String,
+      default: null
+    },
+    breakEndTime: {
+      type: String,
+      default: null
+    },
+    holidays: {
+      type: [String],
+      default: []
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    },
     isDefault: {
       type: Boolean,
       default: false

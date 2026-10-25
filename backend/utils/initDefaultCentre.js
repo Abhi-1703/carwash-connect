@@ -36,6 +36,11 @@ async function initDefaultCentre() {
         latitude: 20.9042, // Reference coordinates (Dhule central crossroads)
         longitude: 74.7749,
         phone: '1800-000-DEMO (Demo Helpline)',
+        email: 'default.centre@carwash.com',
+        city: 'Dhule',
+        district: 'Dhule',
+        state: 'Maharashtra',
+        country: 'India',
         description: 'Demonstration and sample booking car wash center for platform testing. Clearly identified placeholder information for viva and evaluation purposes.',
         openingTime: '08:00',
         closingTime: '20:00',
@@ -43,13 +48,30 @@ async function initDefaultCentre() {
         capacityPerSlot: 2,
         rating: 4.9,
         imageUrl: 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=600&q=80',
+        workingDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        isActive: true,
         isDefault: true
       });
       console.log('[Default Centre]: Created "CarWash Connect Default Centre" successfully.');
     } else {
-      // Ensure the isDefault flag is true
+      // Ensure the isDefault flag and operational fields are set
+      let needsSave = false;
       if (!defaultCentre.isDefault) {
         defaultCentre.isDefault = true;
+        needsSave = true;
+      }
+      if (!defaultCentre.city) {
+        defaultCentre.city = 'Dhule';
+        defaultCentre.district = 'Dhule';
+        defaultCentre.state = 'Maharashtra';
+        defaultCentre.country = 'India';
+        needsSave = true;
+      }
+      if (defaultCentre.isActive === undefined || defaultCentre.isActive === null) {
+        defaultCentre.isActive = true;
+        needsSave = true;
+      }
+      if (needsSave) {
         await defaultCentre.save();
       }
     }

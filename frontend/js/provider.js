@@ -63,6 +63,22 @@ function renderWashDetails() {
   document.getElementById('wash-open-input').value = myWash.openingTime || '09:00';
   document.getElementById('wash-close-input').value = myWash.closingTime || '18:00';
   document.getElementById('wash-desc-input').value = myWash.description || '';
+
+  if (document.getElementById('wash-city-input')) {
+    document.getElementById('wash-city-input').value = myWash.city || '';
+  }
+  if (document.getElementById('wash-district-input')) {
+    document.getElementById('wash-district-input').value = myWash.district || '';
+  }
+  if (document.getElementById('wash-break-start-input')) {
+    document.getElementById('wash-break-start-input').value = myWash.breakStartTime || '';
+  }
+  if (document.getElementById('wash-break-end-input')) {
+    document.getElementById('wash-break-end-input').value = myWash.breakEndTime || '';
+  }
+  if (document.getElementById('wash-is-active-select')) {
+    document.getElementById('wash-is-active-select').value = myWash.isActive !== false ? 'true' : 'false';
+  }
 }
 
 async function handleSaveWash(e) {
@@ -75,7 +91,12 @@ async function handleSaveWash(e) {
     longitude: parseFloat(document.getElementById('wash-lng-input').value),
     openingTime: document.getElementById('wash-open-input').value,
     closingTime: document.getElementById('wash-close-input').value,
-    description: document.getElementById('wash-desc-input').value.trim()
+    description: document.getElementById('wash-desc-input').value.trim(),
+    city: document.getElementById('wash-city-input') ? document.getElementById('wash-city-input').value.trim() : '',
+    district: document.getElementById('wash-district-input') ? document.getElementById('wash-district-input').value.trim() : '',
+    breakStartTime: document.getElementById('wash-break-start-input') ? document.getElementById('wash-break-start-input').value || null : null,
+    breakEndTime: document.getElementById('wash-break-end-input') ? document.getElementById('wash-break-end-input').value || null : null,
+    isActive: document.getElementById('wash-is-active-select') ? document.getElementById('wash-is-active-select').value === 'true' : true
   };
 
   try {

@@ -95,6 +95,34 @@
             <input type="time" id="wash-close-input" class="form-control" value="18:00" required>
           </div>
 
+          <div class="form-group">
+            <label for="wash-city-input">Town / City</label>
+            <input type="text" id="wash-city-input" class="form-control" placeholder="e.g. Shirpur or Dhule">
+          </div>
+
+          <div class="form-group">
+            <label for="wash-district-input">District</label>
+            <input type="text" id="wash-district-input" class="form-control" placeholder="e.g. Dhule">
+          </div>
+
+          <div class="form-group">
+            <label for="wash-break-start-input">Break Start Time (Optional)</label>
+            <input type="time" id="wash-break-start-input" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="wash-break-end-input">Break End Time (Optional)</label>
+            <input type="time" id="wash-break-end-input" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="wash-is-active-select">Operating Status</label>
+            <select id="wash-is-active-select" class="form-control">
+              <option value="true" selected>Active (Accepting Bookings)</option>
+              <option value="false">Inactive (Temporarily Closed)</option>
+            </select>
+          </div>
+
           <div class="form-group" style="grid-column:1/-1;">
             <label for="wash-desc-input">Center Description</label>
             <textarea id="wash-desc-input" class="form-control" rows="3" placeholder="Tell customers about your wash technology, waiting lounge, foam equipment..."></textarea>
